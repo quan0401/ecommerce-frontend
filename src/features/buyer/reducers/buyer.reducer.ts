@@ -18,5 +18,5 @@ const buyerSlice: Slice = createSlice({
   }
 });
 
-export const { addBuyer, emptryBuyer } = buyerSlice.actions;
+export const { addBuyer, emptyBuyer } = buyerSlice.actions;
 export default buyerSlice.reducer;

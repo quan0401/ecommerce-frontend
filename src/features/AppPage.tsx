@@ -1,31 +1,35 @@
-import { FC, ReactElement, useCallback, useEffect, useState } from 'react';
+import { FC, lazy, ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-
 import { useAppDispatch, useAppSelector } from '~/store/store';
 import { useCheckCurrentUserQuery } from './auth/services/auth.service';
-
 import { IReduxState } from '~/store/store.interface';
-import { applicationLogout, saveToSessionStorage } from '~shared/utils/utils.service';
-
+import { applicationLogout, getDataFromLocalStorage, saveToSessionStorage } from '~shared/utils/utils.service';
 import { addAuthUser } from './auth/reducers/auth.reducer';
-import { Index } from './index/Index';
-import HomeHeader from '~shared/header/components/HomeHeader';
-import Home from './home/Home';
 import { useGetBuyerByEmailQuery } from './buyer/services/buyer.service';
 import { addBuyer } from './buyer/reducers/buyer.reducer';
+import { useGetSellerByEmailQuery } from './seller/services/seller.service';
+import { addSeller } from './seller/reducers/seller.reducer';
+import CircularPageLoader from '~shared/page-loader/CircularPageLoader';
+
+const Index = lazy(() => import('./index/Index'));
+const HomeHeader = lazy(() => import('~shared/header/components/HomeHeader'));
+const Home = lazy(() => import('./home/Home'));
 
 const AppPage: FC = (): ReactElement => {
   const authUser = useAppSelector((state: IReduxState) => state.authUser);
   const appLogout = useAppSelector((state: IReduxState) => state.logout);
-  const showCategoryContainer = true;
+  const showCategoryContainer = useAppSelector((state: IReduxState) => state.showCategoryContainer);
   const [tokenIsValid, setTokenIsValid] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const navigate: NavigateFunction = useNavigate();
   const { data: currentUserData, isError } = useCheckCurrentUserQuery(undefined, {
-    // it will skip if the user is not logined
+    // it will skip if the user is not logged in
     skip: authUser.id === null
   });
-  const { data: buyerData } = useGetBuyerByEmailQuery(undefined, {
+  const { data: buyerData, isLoading: isBuyerLoading } = useGetBuyerByEmailQuery(undefined, {
+    skip: authUser.id === null
+  });
+  const { data: sellerData, isLoading: isSellerLoading } = useGetSellerByEmailQuery(`${authUser.email}`, {
     skip: authUser.id === null
   });
 
@@ -35,20 +39,25 @@ const AppPage: FC = (): ReactElement => {
         setTokenIsValid(true);
         dispatch(addAuthUser({ authInfo: currentUserData.user }));
         dispatch(addBuyer(buyerData?.buyer));
+        dispatch(addSeller(sellerData?.seller));
         saveToSessionStorage(JSON.stringify(true), JSON.stringify(authUser.username));
+        const becomeASeller: boolean = getDataFromLocalStorage('becomeASeller');
+        if (becomeASeller) {
+          navigate('/seller_onboarding');
+        }
       }
     } catch (error) {
       console.log(error);
     }
     // put everything used in useCallback inside dependency
-  }, [currentUserData, dispatch, appLogout, authUser.username]);
+  }, [currentUserData, navigate, dispatch, appLogout, authUser.username, sellerData, buyerData]);
 
   const logoutUser = useCallback(async () => {
     if ((!currentUserData && appLogout) || isError) {
       setTokenIsValid(false);
       applicationLogout(dispatch, navigate);
     }
-  }, [currentUserData, dispatch, navigate, appLogout, isError, buyerData]);
+  }, [currentUserData, dispatch, navigate, appLogout, isError, buyerData, sellerData]);
 
   useEffect(() => {
     checkUser();
@@ -60,8 +69,14 @@ const AppPage: FC = (): ReactElement => {
       <Index />
     ) : (
       <>
-        <HomeHeader showCategoryContainer={showCategoryContainer} />
-        <Home />
+        {isBuyerLoading && isSellerLoading ? (
+          <CircularPageLoader />
+        ) : (
+          <>
+            <HomeHeader showCategoryContainer={showCategoryContainer} />
+            <Home />
+          </>
+        )}
       </>
     );
   } else {

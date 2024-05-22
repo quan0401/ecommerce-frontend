@@ -11,12 +11,13 @@ import { ISignInPayload } from '~features/auth/interfaces/auth.interface';
 import TextInput from '~shared/inputs/TextInput';
 import { saveToSessionStorage } from '~shared/utils/utils.service';
 
-import { useAuthSchema } from '../hooks/useAuthSchema';
+import { useAuthScheme } from '../hooks/useAuthScheme';
 import { addAuthUser } from '../reducers/auth.reducer';
 import { updateLogout } from '../reducers/logout.reducer';
 import { loginUserSchema } from '../schemes/auth.scheme';
 import { useSignInMutation } from '../services/auth.service';
 import { updateHeader } from '~shared/header/reducers/header.reducer';
+import { updateCategoryContainer } from '~shared/header/reducers/category.reducer';
 
 const Button: LazyExoticComponent<FC<IButtonProps>> = lazy(() => import('~/shared/button/Button'));
 const Alert: LazyExoticComponent<FC<IAlertProps>> = lazy(() => import('~/shared/alert/Alert'));
@@ -34,7 +35,7 @@ const LoginModal: FC<IModalBgProps> = ({ onClose, onToggle, onTogglePassword }):
   });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [schemaValidation, validationErrors] = useAuthSchema({ schema: loginUserSchema, userInfo });
+  const [schemaValidation, validationErrors] = useAuthScheme({ schema: loginUserSchema, userInfo });
   const [signin, { isLoading }] = useSignInMutation();
 
   const onLoginUser = async (): Promise<void> => {
@@ -50,6 +51,7 @@ const LoginModal: FC<IModalBgProps> = ({ onClose, onToggle, onTogglePassword }):
         setAlertMessage('successful');
         dispatch(addAuthUser({ authInfo: result.user }));
         dispatch(updateLogout(false));
+        dispatch(updateCategoryContainer(true));
         dispatch(updateHeader('home'));
         saveToSessionStorage(JSON.stringify(true), JSON.stringify(result.user?.email));
         // }

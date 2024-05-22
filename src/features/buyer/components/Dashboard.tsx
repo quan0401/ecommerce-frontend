@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BuyerTable from './BuyerTable';
 import { orderTypes } from '~shared/utils/utils.service';
@@ -7,14 +7,13 @@ import { IOrderDocument } from '~features/order/interfaces/order.interface';
 const BUYER_GIG_STATUS = {
   ACTIVE: 'active',
   COMPLETED: 'completed',
-  CANCELED: 'canceled',
+  CANCELLED: 'cancelled',
   IN_PROGRESS: 'in_progress',
   DELIVERED: 'delivered'
 };
 
 const BuyerDashboard = () => {
   const [type, setType] = useState<string>(BUYER_GIG_STATUS.ACTIVE);
-  const { buyerId } = useParams<string>();
   const orders: IOrderDocument[] = [];
 
   return (
@@ -43,11 +42,11 @@ const BuyerDashboard = () => {
                 Completed <span className="ml-1 rounded-[5px] bg-sky-500 px-[5px] py-[1px] text-xs font-medium text-white">1</span>
               </a>
             </li>
-            <li className="inline-block py-3 uppercase" onClick={() => setType(BUYER_GIG_STATUS.CANCELED)}>
+            <li className="inline-block py-3 uppercase" onClick={() => setType(BUYER_GIG_STATUS.CANCELLED)}>
               <a
                 href="#activeorders"
                 className={`px-4 py-3 text-xs text-[#555555] no-underline sm:text-sm md:text-base ${
-                  type === BUYER_GIG_STATUS.CANCELED ? 'pb-[15px] outline outline-1 outline-[#e8e8e8] sm:rounded-t-lg' : ''
+                  type === BUYER_GIG_STATUS.CANCELLED ? 'pb-[15px] outline outline-1 outline-[#e8e8e8] sm:rounded-t-lg' : ''
                 }`}
               >
                 Cancelled <span className="ml-1 rounded-[5px] bg-sky-500 px-[5px] py-[1px] text-xs font-medium text-white">2</span>
@@ -62,8 +61,8 @@ const BuyerDashboard = () => {
         {type === BUYER_GIG_STATUS.COMPLETED && (
           <BuyerTable type="completed" orders={orders} orderTypes={orderTypes(BUYER_GIG_STATUS.COMPLETED, orders)} />
         )}
-        {type === BUYER_GIG_STATUS.CANCELED && (
-          <BuyerTable type="canceled" orders={orders} orderTypes={orderTypes(BUYER_GIG_STATUS.CANCELED, orders)} />
+        {type === BUYER_GIG_STATUS.CANCELLED && (
+          <BuyerTable type="cancelled" orders={orders} orderTypes={orderTypes(BUYER_GIG_STATUS.CANCELLED, orders)} />
         )}
       </div>
     </div>

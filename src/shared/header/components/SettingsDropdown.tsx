@@ -4,6 +4,8 @@ import { IHomeHeaderProps } from '../interfaces/header.interface';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '~/store/store';
 import { applicationLogout, lowerCase } from '~shared/utils/utils.service';
+import { updateCategoryContainer } from '../reducers/category.reducer';
+import { updateHeader } from '../reducers/header.reducer';
 
 const SettingsDropdown: FC<IHomeHeaderProps> = ({ seller, authUser, buyer, type, setIsDropdownOpen }) => {
   const navigate: NavigateFunction = useNavigate();
@@ -21,20 +23,22 @@ const SettingsDropdown: FC<IHomeHeaderProps> = ({ seller, authUser, buyer, type,
       <ul className="text-gray-700s py-2 text-sm" aria-labelledby="avatarButton">
         <li className="mx-3 mb-1">
           <Link
-            to={`${type !== 'buyer' ? `/${lowerCase(`${authUser?.username}`)}/${seller?._id}/seller_dashboard` : '/'}`}
+            to={`${type === 'buyer' ? `/${lowerCase(`${authUser?.username}`)}/${seller?._id}/seller_dashboard` : '/'}`}
             className="block w-full cursor-pointer rounded  px-4s py-2 text-center font-bold  hover:bg-sky-400 focus:outline-none"
             onClick={() => {
               if (setIsDropdownOpen) {
                 setIsDropdownOpen(false);
               }
+              dispatch(updateCategoryContainer(true));
+              dispatch(updateHeader('sellerDashboard'));
             }}
           >
-            {type !== 'buyer' ? 'Switch to Selling' : 'Switch to Buying'}
+            {type === 'buyer' ? 'Switch to Selling' : 'Switch to Buying'}
           </Link>
         </li>
 
         {/* have to be a seller  */}
-        {buyer && buyer.isSeller && type !== 'buyer' && (
+        {buyer && buyer.isSeller && type === 'buyer' && (
           <li>
             <Link
               to={`/manage_gigs/new/${seller?._id}`}
@@ -43,21 +47,34 @@ const SettingsDropdown: FC<IHomeHeaderProps> = ({ seller, authUser, buyer, type,
                 if (setIsDropdownOpen) {
                   setIsDropdownOpen(false);
                 }
+                dispatch(updateHeader('home'));
+                dispatch(updateCategoryContainer(true));
               }}
             >
               Add a new gig
             </Link>
           </li>
         )}
+
         {type === 'buyer' && (
           <li>
-            <Link to={`/users/${buyer?.username}/${buyer?._id}/orders`} className="block px-4 py-2 hover:text-sky-400">
+            <Link
+              onClick={() => {
+                if (setIsDropdownOpen) {
+                  setIsDropdownOpen(false);
+                }
+                dispatch(updateCategoryContainer(true));
+                dispatch(updateHeader('home'));
+              }}
+              to={`/users/${buyer?.username}/${buyer?._id}/orders`}
+              className="block px-4 py-2 hover:text-sky-400"
+            >
               Dashboard
             </Link>
           </li>
         )}
         {/* take to seller profile */}
-        {buyer && buyer.isSeller && type !== 'buyer' && (
+        {buyer && buyer.isSeller && type === 'buyer' && (
           <li>
             <Link
               to={`/seller_profile/${lowerCase(`${seller?.username}`)}/${seller?._id}/edit`}
@@ -66,6 +83,8 @@ const SettingsDropdown: FC<IHomeHeaderProps> = ({ seller, authUser, buyer, type,
                 if (setIsDropdownOpen) {
                   setIsDropdownOpen(false);
                 }
+                dispatch(updateHeader('home'));
+                dispatch(updateCategoryContainer(true));
               }}
             >
               Profile
@@ -80,6 +99,8 @@ const SettingsDropdown: FC<IHomeHeaderProps> = ({ seller, authUser, buyer, type,
               if (setIsDropdownOpen) {
                 setIsDropdownOpen(false);
               }
+              dispatch(updateCategoryContainer(false));
+              dispatch(updateHeader('home'));
             }}
           >
             Settings

@@ -2,11 +2,14 @@ import { Dispatch } from '@reduxjs/toolkit';
 import countries, { LocalizedCountryNames } from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import { NavigateFunction } from 'react-router-dom';
-
+import millify from 'millify';
 import { logout } from '~features/auth/reducers/logout.reducer';
 import { authApi } from '~features/auth/services/auth.service';
 import { api } from '~/store/api';
 import { IOrderDocument } from '~features/order/interfaces/order.interface';
+import { toast } from 'react-toastify';
+import isEqual from 'react-fast-compare';
+import { cloneDeep } from 'lodash';
 
 countries.registerLocale(enLocale);
 
@@ -71,7 +74,7 @@ export const saveToLocalStorage = (key: string, data: string): void => {
   window.localStorage.setItem(key, data);
 };
 
-export const getDataFromLocalStorage = (key: string): string => {
+export const getDataFromLocalStorage = (key: string): any => {
   const data = window.localStorage.getItem(key) as string;
   return JSON.parse(data);
 };
@@ -97,6 +100,119 @@ export const applicationLogout = (dispatch: Dispatch<any>, navigate: NavigateFun
 };
 
 export const orderTypes = (status: string, orders: IOrderDocument[]): number => {
-  const filtered: IOrderDocument[] = orders.filter((ord: IOrderDocument) => ord.status === status);
+  const filtered: IOrderDocument[] = orders.filter((ord: IOrderDocument) => lowerCase(ord.status) === lowerCase(status));
   return filtered.length;
+};
+
+export const sellerOrderList = (status: string, orders: IOrderDocument[]): IOrderDocument[] => {
+  const orderList: IOrderDocument[] = orders.filter((ord: IOrderDocument) => lowerCase(ord.status) === lowerCase(status));
+  return orderList;
+};
+
+export const degreeList = (): string[] => {
+  return ['Associate', 'B.A.', 'B.Sc.', 'M.A.', 'M.B.A.', 'M.Sc.', 'J.D.', 'M.D.', 'Ph.D.', 'LLB', 'Certificate', 'Other'];
+};
+
+export const languageLevel = (): string[] => {
+  return ['Basic', 'Conversational', 'Fluent', 'Native'];
+};
+
+export const yearList = (maxOffset: number): string[] => {
+  const years: string[] = [];
+  const currentYear: number = new Date().getFullYear();
+  for (let i = 0; i <= maxOffset; i++) {
+    const year: number = currentYear - i;
+    years.push(`${year}`);
+  }
+  return years;
+};
+
+export const monthList = (): string[] => {
+  return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+};
+
+export const shortenLargeNumbers = (data: number | undefined): string => {
+  if (data === undefined) {
+    return '0';
+  }
+  // 100,000,000 => 100M
+  return millify(data, { precision: 0 });
+};
+
+export const rating = (num: number): number => {
+  // convert to decimal
+  if (num) {
+    return Math.round(num * 10) / 10;
+  }
+  return 0.0;
+};
+
+export const validURL = (str: string): boolean => {
+  var pattern = new RegExp(
+    '^(https?:\\/\\/)' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
+    'i'
+  ); // fragment locator
+  return !!pattern.test(str);
+};
+
+export const isEmptyObj = (obj: Record<string, any>, excludedKeys: string[] = []) => {
+  for (var key in obj) {
+    if (excludedKeys.indexOf(key) >= 0) continue;
+    if (obj[key] !== null && obj[key] !== '') {
+      return false;
+    }
+  }
+  return true;
+};
+
+export const objWithAllValuesPresent = (obj: Record<string, any>, excludedKeys: string[] = []): boolean => {
+  for (const key in obj) {
+    if (excludedKeys.indexOf(key) >= 0) continue;
+    if (obj[key] === null || obj[key] === '') {
+      return false;
+    }
+  }
+  return true;
+};
+
+export const myCompareObjs = (a: Record<string, any>, b: Record<string, any>, excepFields: string[] = []): boolean => {
+  const clonedA = cloneDeep(a);
+  const clonedB = cloneDeep(b);
+  for (const field of excepFields) {
+    delete clonedA[field];
+    delete clonedB[field];
+  }
+  console.log('isEqual(clonedA, clonedB)', isEqual(clonedA, clonedB));
+  return isEqual(clonedA, clonedB);
+};
+
+export const showSuccessToast = (message: string): void => {
+  toast.success(message, {
+    position: 'bottom-right',
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: 'light'
+  });
+};
+
+export const showErrorToast = (message: string): void => {
+  toast.error(message, {
+    position: 'bottom-right',
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: 'error'
+  });
 };

@@ -16,9 +16,9 @@ const GigTabs: FC = (): ReactElement => {
         </div>
         <div className="mt-6">
           <ul className="lg:flex lg:justify-between gap-5 overflow-x-auto scroll-smooth whitespace-nowrap relative inline-block">
-            {categories().map((category: string) => (
+            {categories().map((category: string, index: number) => (
               <li
-                key={uuidv4()}
+                key={index}
                 onClick={() => setActiveTab(category)}
                 // lg:py-0 lg xl xxl will apply py-0
                 className={`cursor-pointer font-bold py-2 lg:py-0

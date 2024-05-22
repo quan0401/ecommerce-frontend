@@ -84,8 +84,10 @@ export interface IDropdownProps {
   dropdownClassNames?: string;
   showSearchInput?: boolean;
   style?: CSSProperties;
+  ref?: Ref<HTMLDivElement>;
   setValue?: Dispatch<SetStateAction<string>>;
   onClick?: (item: string) => void;
+  onFocus?: () => void;
 }
 
 export interface IHtmlParserProps {

@@ -13,8 +13,8 @@ const Categories: FC = (): ReactElement => {
           </h2>
         </div>
         <div className="gap-8 hidden sm:grid sm:grid-cols-3 md:grid-cols-4">
-          {categories.map((cat: any) => (
-            <div key={uuidv4()} className="w-full py-5 cursor-pointer">
+          {categories.map((cat: any, index: number) => (
+            <div key={index} className="w-full py-5 cursor-pointer">
               <img className="mx-auto hidden mb-4 sm:w-8 sm:h-8 md:h-12 md:w-12 sm:flex" src={cat.icon} alt="" />
               <h3 className="mb-1 text-base hover:text-sky-400">
                 <a className="w-full">{cat.name}</a>
@@ -22,8 +22,8 @@ const Categories: FC = (): ReactElement => {
             </div>
           ))}
         </div>
-        {categories.map((cat: any) => (
-          <div key={uuidv4()} className="flex flex-wrap gap-x-2 gap-y-4 py-1 sm:hidden">
+        {categories.map((cat: any, index: number) => (
+          <div key={index} className="flex flex-wrap gap-x-2 gap-y-4 py-1 sm:hidden">
             <div className="cursor-pointer text-black border border-black rounded-3xl w-auto p-2 hover:bg-[#f7f9fa]">
               <h3 className="mb-1 text-xs font-bold ">{cat.name}</h3>
             </div>

@@ -10,16 +10,18 @@ import ModalBg from '~shared/modals/ModalBg';
 import { checkImageOrVideo, readAsBase64 } from '~shared/utils/image-utils.service';
 import { countriesList, saveToSessionStorage } from '~shared/utils/utils.service';
 
-import { useAuthSchema } from '../hooks/useAuthSchema';
+import { useAuthScheme } from '../hooks/useAuthScheme';
 import { ISignUpPayload } from '../interfaces/auth.interface';
 import { addAuthUser } from '../reducers/auth.reducer';
 import { updateLogout } from '../reducers/logout.reducer';
 import { registerUserSchema } from '../schemes/auth.scheme';
 import { useSignUpMutation } from '../services/auth.service';
+import { updateCategoryContainer } from '~shared/header/reducers/category.reducer';
+import { updateHeader } from '~shared/header/reducers/header.reducer';
 
 const Button: LazyExoticComponent<FC<IButtonProps>> = lazy(() => import('~/shared/button/Button'));
 const Alert: LazyExoticComponent<FC<IAlertProps>> = lazy(() => import('~/shared/alert/Alert'));
-const DropDown: LazyExoticComponent<FC<IDropdownProps>> = lazy(() => import('~shared/dropdown/DropDown'));
+const Dropdown: LazyExoticComponent<FC<IDropdownProps>> = lazy(() => import('~shared/dropdown/Dropdown'));
 
 const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement => {
   const mobileOrientation = useMobileOrientation();
@@ -41,7 +43,7 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [schemaValidation] = useAuthSchema({ schema: registerUserSchema, userInfo });
+  const [schemaValidation] = useAuthScheme({ schema: registerUserSchema, userInfo });
   const [signup, { isLoading }] = useSignUpMutation();
   const dispatch = useAppDispatch();
 
@@ -68,6 +70,8 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
         setAlertMessage('');
         dispatch(addAuthUser({ authInfo: result.user }));
         dispatch(updateLogout(false));
+        dispatch(updateCategoryContainer(true));
+        dispatch(updateHeader('home'));
         saveToSessionStorage(JSON.stringify(true), JSON.stringify(result.user?.email));
       }
     } catch (error) {
@@ -206,7 +210,7 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
                 Country
               </label>
               <div id="country" className="relative mb-5 mt-2">
-                <DropDown
+                <Dropdown
                   text={country}
                   maxHeight="200"
                   mainClassNames="absolute bg-white z-50"

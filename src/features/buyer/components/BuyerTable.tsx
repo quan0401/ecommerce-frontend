@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { IOrderTableProps } from '~features/order/interfaces/order.interface';
 import { IOrderDocument } from '~features/order/interfaces/order.interface';
+import { TimeAgo } from '~shared/utils/timeago.utils';
 
 const BuyerTable: FC<IOrderTableProps> = ({ type, orders, orderTypes }) => {
   return (
@@ -15,9 +16,9 @@ const BuyerTable: FC<IOrderTableProps> = ({ type, orders, orderTypes }) => {
         {orderTypes > 0 ? (
           <>
             <thead className="border-grey border-b text-xs uppercase text-gray-700 sm:[&>*:not(:first-child)]:hidden">
-              {orders.map(() => (
+              {orders.map((_, index: number) => (
                 <tr
-                  key={uuidv4()}
+                  key={index}
                   className="mb-1 flex flex-col flex-nowrap bg-sky-500 text-white sm:mb-0 sm:table-row md:table-row lg:bg-transparent lg:text-black"
                 >
                   <th className="p-3 text-center md:w-[6%]">
@@ -46,8 +47,12 @@ const BuyerTable: FC<IOrderTableProps> = ({ type, orders, orderTypes }) => {
                       </Link>
                     </div>
                   </td>
-                  <td className="p-3 text-left lg:text-center">20/20/2027</td>
-                  <td className="p-3 text-left lg:text-center">20/20/2028</td>
+                  <td className="p-3 text-left lg:text-center">{TimeAgo.dayMonthYear(`${order.dateOrdered}`)}</td>
+                  <td className="p-3 text-left lg:text-center">
+                    {type === 'cancelled'
+                      ? TimeAgo.dayMonthYear(`${order.approved}`)
+                      : TimeAgo.dayMonthYear(`${order.offer.newDeliveryDate}`)}
+                  </td>
                   <td className="p-3 text-left lg:text-center">{order.price}</td>
                   <td className="px-3 py-1 text-left lg:p-3 lg:text-center">
                     <span

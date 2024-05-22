@@ -1,9 +1,9 @@
 import { FC, lazy, LazyExoticComponent, ReactElement, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import { IHeader, IHeaderModalProps } from '~/shared/header/interfaces/header.interface';
 import { IModalBgProps } from '~/shared/modals/interfaces/modal.interface';
 import { IButtonProps } from '~/shared/shared.interface';
+import { saveToLocalStorage } from '~shared/utils/utils.service';
 
 const Button: LazyExoticComponent<FC<IButtonProps>> = lazy(() => import('~/shared/button/Button'));
 const LoginModal: LazyExoticComponent<FC<IModalBgProps>> = lazy(() => import('~/features/auth/components/Login'));
@@ -56,7 +56,13 @@ const Header: FC<IHeader> = ({ navClass }): ReactElement => {
                 <div className="text-gray-600 dark:text-gray-300 lg:pr-4">
                   <ul className="space-y-6 text-base font-medium tracking-wide lg:flex lg:space-y-0 lg:text-sm">
                     <li>
-                      <div className="hover:text-primary dark:hover:text-primaryLight block transition md:px-4">
+                      <div
+                        onClick={() => {
+                          setShowModal((item: IHeaderModalProps) => ({ ...item, login: false, register: true }));
+                          saveToLocalStorage('becomeASeller', JSON.stringify(true));
+                        }}
+                        className="hover:text-primary dark:hover:text-primaryLight block transition md:px-4"
+                      >
                         <span>Become a Seller</span>
                       </div>
                     </li>

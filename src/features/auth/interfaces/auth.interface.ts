@@ -35,7 +35,7 @@ export interface IAuthDocument {
   deviceType?: string;
 }
 
-export interface IUseAuthSchema {
+export interface IuseAuthScheme {
   schema: ObjectSchema<ISignInPayload | ISignUpPayload | IResetPassword>;
   userInfo: ISignInPayload | ISignUpPayload | IResetPassword;
 }

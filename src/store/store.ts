@@ -12,6 +12,8 @@ import logoutReducer from '~features/auth/reducers/logout.reducer';
 import { api } from './api';
 import headerReducer from '~shared/header/reducers/header.reducer';
 import buyerReducer from '~features/buyer/reducers/buyer.reducer';
+import sellerReducer from '~features/seller/reducers/seller.reducer';
+import categoryReducer from '~shared/header/reducers/category.reducer';
 
 const persistConfig = {
   key: 'root',
@@ -23,7 +25,9 @@ export const combineReducer = combineReducers({
   authUser: authReducer,
   logout: logoutReducer,
   header: headerReducer,
-  buyer: buyerReducer
+  showCategoryContainer: categoryReducer,
+  buyer: buyerReducer,
+  seller: sellerReducer
 });
 
 export const rootReducers: Reducer<RootState> = (state, action) => {

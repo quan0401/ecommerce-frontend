@@ -24,8 +24,8 @@ const StarRating: FC<IStarRatingProps> = ({ value, size, setReviewRating }): Rea
         ))}
         {/* unselected stars */}
         <div className="absolute flex text-orange-400">
-          {numberOfStars.map((index: number) => (
-            <FaRegStar className="mr-1" key={uuidv4()} size={size} onClick={() => handleClick(index)} />
+          {numberOfStars.map((num: number, index: number) => (
+            <FaRegStar className="mr-1" key={index} size={size} onClick={() => handleClick(num)} />
           ))}
         </div>
       </div>

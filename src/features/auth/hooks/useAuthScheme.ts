@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 import { validationErrorsType } from '~shared/shared.interface';
 
-import { IUseAuthSchema } from '../interfaces/auth.interface';
+import { IuseAuthScheme } from '../interfaces/auth.interface';
 
-const useAuthSchema = ({ schema, userInfo }: IUseAuthSchema): [() => Promise<boolean>, validationErrorsType[]] => {
+const useAuthScheme = ({ schema, userInfo }: IuseAuthScheme): [() => Promise<boolean>, validationErrorsType[]] => {
   const [validationErrors, setValidationErrors] = useState<validationErrorsType[]>([]);
   async function schemaValidation(): Promise<boolean> {
     // when it encounters error, it still continues (abortEarly: false)
@@ -21,4 +21,4 @@ const useAuthSchema = ({ schema, userInfo }: IUseAuthSchema): [() => Promise<boo
   return [schemaValidation, validationErrors];
 };
 
-export { useAuthSchema };
+export { useAuthScheme };

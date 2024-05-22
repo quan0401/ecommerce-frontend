@@ -8,6 +8,7 @@ import { AUTH_FETCH_STATUS } from '~features/auth/interfaces/auth.interface';
 import TextInput from '~shared/inputs/TextInput';
 
 import { useForgotPasswordMutation } from '../services/auth.service';
+import { showSuccessToast } from '~shared/utils/utils.service';
 
 const Button: LazyExoticComponent<FC<IButtonProps>> = lazy(() => import('~/shared/button/Button'));
 const Alert: LazyExoticComponent<FC<IAlertProps>> = lazy(() => import('~/shared/alert/Alert'));

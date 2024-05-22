@@ -2,13 +2,11 @@ import { ChangeEvent, FC, FormEvent, lazy, LazyExoticComponent, ReactElement, Re
 import { FaSearch } from 'react-icons/fa';
 import { createSearchParams, NavigateFunction, useNavigate } from 'react-router-dom';
 import Typed from 'typed.js';
-import { v4 as uuidv4 } from 'uuid';
-
-import TextInput from '~/shared/inputs/TextInput';
 import { IButtonProps } from '~/shared/shared.interface';
 import { replaceSpacesWithDash } from '~/shared/utils/utils.service';
 
 const Button: LazyExoticComponent<FC<IButtonProps>> = lazy(() => import('~/shared/button/Button'));
+const TextInput = lazy(() => import('~/shared/inputs/TextInput'));
 
 const categories: string[] = ['Graphics & Design', 'Digital Marketing', 'Writing & Translation', 'Programming & Tech'];
 
@@ -90,9 +88,9 @@ const Hero: FC = (): ReactElement => {
             </div>
 
             <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:flex sm:justify-center lg:justify-start">
-              {categories.map((category: string) => (
+              {categories.map((category: string, index: number) => (
                 <div
-                  key={uuidv4()}
+                  key={index}
                   className="w-full min-w-0 cursor-pointer rounded-full border border-gray-200 p-4 duration-300 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-600/20 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-cyan-300/30"
                 >
                   <div className="flex justify-center">

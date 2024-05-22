@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, FormEvent, lazy, LazyExoticComponent, ReactElement, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { IModalBgProps } from '~/shared/modals/interfaces/modal.interface';
 import { IAlertProps, IButtonProps, IResponse } from '~/shared/shared.interface';
@@ -7,7 +7,7 @@ import { AUTH_FETCH_STATUS, IResetPassword } from '~features/auth/interfaces/aut
 import { IHeader } from '~shared/header/interfaces/header.interface';
 import TextInput from '~shared/inputs/TextInput';
 
-import { useAuthSchema } from '../hooks/useAuthSchema';
+import { useAuthScheme } from '../hooks/useAuthScheme';
 import { resetPasswordSchema } from '../schemes/auth.scheme';
 import { useResetPasswordMutation } from '../services/auth.service';
 
@@ -22,9 +22,10 @@ const ResetPasswordModal: FC<IModalBgProps> = ({}): ReactElement => {
     password: '',
     confirmPassword: ''
   });
-  const [schemaValidation] = useAuthSchema({ schema: resetPasswordSchema, userInfo });
+  const [schemaValidation] = useAuthScheme({ schema: resetPasswordSchema, userInfo });
   const [searchParams] = useSearchParams({});
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const navigate: NavigateFunction = useNavigate();
 
   const onResetPassword = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
@@ -39,6 +40,7 @@ const ResetPasswordModal: FC<IModalBgProps> = ({}): ReactElement => {
         setAlertMessage(`${result.message}`);
         setStatus(AUTH_FETCH_STATUS.SUCCESS);
         setUserInfo({ password: '', confirmPassword: '' });
+        navigate('/');
       }
     } catch (error) {
       setStatus(AUTH_FETCH_STATUS.ERROR);

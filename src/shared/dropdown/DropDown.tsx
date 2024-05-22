@@ -1,14 +1,13 @@
 import { filter } from 'lodash';
-import { ChangeEvent, FC, lazy, LazyExoticComponent, MouseEvent, ReactElement, useRef, useState } from 'react';
+import { ChangeEvent, FC, lazy, LazyExoticComponent, MouseEvent, ReactElement, useEffect, useState } from 'react';
 import { FaChevronDown, FaChevronUp, FaTimes } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
-
 import TextInput from '~/shared/inputs/TextInput';
 import { IButtonProps, IDropdownProps } from '~/shared/shared.interface';
 
 const Button: LazyExoticComponent<FC<IButtonProps>> = lazy(() => import('~/shared/button/Button'));
 
-const DropDown: FC<IDropdownProps> = ({
+const Dropdown: FC<IDropdownProps> = ({
   text,
   values,
   maxHeight,
@@ -18,13 +17,13 @@ const DropDown: FC<IDropdownProps> = ({
   style,
   placeholder,
   setValue,
-  onClick
+  onClick,
+  onFocus
 }): ReactElement => {
   const [dropdownItems, setDropdownItems] = useState<string[]>(values);
   const [inputText, setInputText] = useState<string>(text);
 
   const [toggleDropdown, setToggleDropdown] = useState<boolean>(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const onHandleSelect = (event: MouseEvent): void => {
     const selectedItem: string = (event.target as HTMLLIElement).textContent as string;
@@ -38,8 +37,21 @@ const DropDown: FC<IDropdownProps> = ({
     }
   };
 
+  useEffect(() => {
+    // dynamic passing values
+    setDropdownItems(values);
+  }, [values]);
+
   return (
-    <div className={`w-full divide-y divide-gray-100 rounded border ${mainClassNames}`} style={style}>
+    <div
+      className={`w-full divide-y divide-gray-100 rounded border ${mainClassNames}`}
+      style={style}
+      onFocus={() => {
+        if (onFocus) {
+          onFocus();
+        }
+      }}
+    >
       {(!showSearchInput || showSearchInput) && !toggleDropdown && (
         <Button
           className="bg-teal flex w-full justify-between rounded px-3 py-2 text-white"
@@ -53,10 +65,9 @@ const DropDown: FC<IDropdownProps> = ({
               )}
             </>
           }
-          onClick={() => setToggleDropdown(!toggleDropdown)}
+          onClick={() => setToggleDropdown(true)}
         />
       )}
-
       {showSearchInput && toggleDropdown && (
         <div className="flex">
           <TextInput
@@ -97,4 +108,4 @@ const DropDown: FC<IDropdownProps> = ({
   );
 };
 
-export default DropDown;
+export default Dropdown;

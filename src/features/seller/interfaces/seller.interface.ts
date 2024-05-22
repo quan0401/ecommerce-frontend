@@ -129,42 +129,42 @@ export interface ISellerContext {
 }
 
 export interface ILanguageEditFieldsProps {
-  type: string;
+  type: 'add' | 'edit';
   selectedLanguage?: ILanguage;
   setShowLanguageEditForm?: Dispatch<SetStateAction<boolean>>;
   setShowLanguageAddForm?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface ISocialEditLinksProps {
-  type: string;
+  type: 'add' | 'edit';
   selectedLink?: string;
   setShowSocialLinksAddForm?: Dispatch<SetStateAction<boolean>>;
   setShowSocialLinksEditForm?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface ICertificateEditProps {
-  type: string;
+  type: 'add' | 'edit';
   selectedCertificate?: ICertificate;
   setShowCertificateAddForm?: Dispatch<SetStateAction<boolean>>;
   setShowCertificateEditForm?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface IExperienceEditProps {
-  type: string;
+  type: 'add' | 'edit';
   selectedExperience?: IExperience;
   setShowExperienceAddForm?: Dispatch<SetStateAction<boolean>>;
   setShowExperienceEditForm?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface IEducationEditProps {
-  type: string;
+  type: 'add' | 'edit';
   selectedEducation?: IEducation;
   setShowEducationAddForm?: Dispatch<SetStateAction<boolean>>;
   setShowEducationEditForm?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface ISkillEditProps {
-  type: string;
+  type: 'add' | 'edit';
   selectedSkill?: string;
   setShowSkillEditForm?: Dispatch<SetStateAction<boolean>>;
   setShowSkillAddForm?: Dispatch<SetStateAction<boolean>>;
@@ -176,12 +176,12 @@ export interface IProfileTabsProps {
 }
 
 export interface IShowEditItem {
-  fullname: boolean;
+  fullName: boolean;
   oneliner: boolean;
 }
 
 export interface ISellerProfileItem {
-  fullname: string;
+  fullName: string;
   oneliner: string;
 }
 

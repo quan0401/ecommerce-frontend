@@ -4,8 +4,7 @@ import { IHomeHeaderProps, INotification } from '../interfaces/header.interface'
 import Button from '~shared/button/Button';
 import { FaAngleLeft, FaAngleRight, FaBars, FaRegBell, FaRegEnvelope } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { categories, replaceSpacesWithDash } from '~shared/utils/utils.service';
-import { v4 as uuidv4 } from 'uuid';
+import { categories, replaceSpacesWithDash, showErrorToast, showSuccessToast } from '~shared/utils/utils.service';
 import { useAppDispatch, useAppSelector } from '~/store/store';
 import { IReduxState } from '~/store/store.interface';
 import { ISellerDocument } from '~features/seller/interfaces/seller.interface';
@@ -17,12 +16,15 @@ import { addAuthUser } from '~features/auth/reducers/auth.reducer';
 import Banner from '~shared/banner/Banner';
 import useDetectOutsideClick from '~shared/hooks/useDetectOutsideClick';
 import SettingsDropdown from './SettingsDropdown';
+import { updateCategoryContainer } from '../reducers/category.reducer';
+import { updateHeader } from '../reducers/header.reducer';
 
 const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactElement => {
   const authUser: IAuthUser = useAppSelector((state: IReduxState) => state.authUser);
   const seller: ISellerDocument = useAppSelector((state: IReduxState) => state.seller);
   const logout: boolean = useAppSelector((state: IReduxState) => state.logout);
   const buyer: IBuyerDocument = useAppSelector((state: IReduxState) => state.buyer);
+  const [emailSent, setEmailSent] = useState<boolean>(false);
   const notification: INotification = useAppSelector((state: IReduxState) => state.notification);
   const [openSideBar, setOpenSidebar] = useState<boolean>(false);
   const [authUsername, setAuthUsername] = useState<string>('');
@@ -44,10 +46,12 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
   const onResendEmail = async (): Promise<void> => {
     try {
       const result: IResponse = await resendEmail({ userId: `${authUser.id}`, email: `${authUser.email}` }).unwrap();
+
       dispatch(addAuthUser({ authInfo: result.user }));
+      showSuccessToast('Email sent successfully.');
     } catch (error) {
       // Show error toast
-      console.log(error);
+      showErrorToast('Error sending');
     }
   };
 
@@ -61,16 +65,24 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
         {/* <!-- Add Banner component here --> */}
         {!logout && authUser && !authUser.emailVerified && (
           <Banner
-            onClick={onResendEmail}
+            onClick={async () => {
+              await onResendEmail();
+              setEmailSent(true);
+            }}
             bgColor="bg-warning"
             showLink={true}
             linkText="Resend email"
-            text="Please verify email before you proceed"
+            // text="Please verify email before you proceed"
+            text={
+              !emailSent
+                ? 'Please verify email before you proceed'
+                : 'Please verify email before you proceed, email just sent check your inbox'
+            }
           />
         )}
 
         <div className="m-auto px-6 xl:container md:px-12 lg:px-6">
-          <div className="flex flex-wrap items-center justify-between gap-6 md:gap-0 md:py-3 lg:py-5">
+          <div className="flex flex-wrap items-center justify-between gap-6 md:gap-0 md:py-3 lg:py-3">
             <div className="flex w-full gap-x-4 lg:w-6/12">
               <div className="hidden w-full md:flex">
                 <label htmlFor="hbr" className="peer-checked:hamburger relative z-20 -ml-4 block cursor-pointer p-6 lg:hidden">
@@ -82,6 +94,10 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
                 <div className="w-full gap-x-4 md:flex">
                   <Link
                     to="/"
+                    onClick={() => {
+                      dispatch(updateCategoryContainer(true));
+                      dispatch(updateHeader('home'));
+                    }}
                     className="relative z-10 flex cursor-pointer justify-center self-center text-2xl font-semibold text-black lg:text-3xl"
                   >
                     Ecommerce
@@ -169,7 +185,7 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
                         className="relative ml-auto flex h-9 items-center justify-center rounded-full bg-sky-500 text-white font-bold sm:px-6 hover:bg-sky-400"
                       >
                         {/* <span className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">Become a Seller</span> */}
-                        <span className="text-xs sm:text-xs md:text-sm lg:text-md xl:text-xl">become a seller</span>
+                        <span className="text-sm">Become a seller</span>
                       </Link>
                     </li>
                   )}
@@ -221,8 +237,8 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
                 ref={navElement}
                 className="relative inline-block h-full w-full items-center gap-6 overflow-x-auto scroll-smooth whitespace-nowrap py-2 text-sm font-medium lg:flex lg:justify-between"
               >
-                {categories().map((category: string) => (
-                  <span key={uuidv4()} className="mx-4 cursor-pointer first:ml-0 hover:text-sky-400 lg:mx-0">
+                {categories().map((category: string, index: number) => (
+                  <span key={index} className="mx-4 cursor-pointer first:ml-0 hover:text-sky-400 lg:mx-0">
                     <Link to={`/categories/${replaceSpacesWithDash(category)}`}>{category}</Link>
                   </span>
                 ))}

@@ -64,7 +64,7 @@ export interface IExtendedDateModalProps {
 }
 
 export interface IOrderTableProps {
-  type: string;
+  type: 'completed' | 'active' | 'cancelled';
   orders: IOrderDocument[];
   orderTypes: number;
 }
